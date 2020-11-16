@@ -1,0 +1,14 @@
+.postContainer {
+	background-color: rgba(100, 100, 100, 0.2);
+	margin: 10px;
+}
+
+.commentContainer {
+	margin: 5px;
+	background-color: rgba(100, 100, 100, 0.2);
+}
+
+.title {
+	font-weight: bold;
+	font-size: larger;
+}

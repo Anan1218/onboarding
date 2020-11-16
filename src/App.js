@@ -25,11 +25,11 @@ function App() {
   useEffect(() => {
     firebase.firestore().collection('posts').orderBy('date').get()
       .then((querySnapshot) => {
-        setPosts(querySnapshot.docs.map((doc) => doc.data()));
+        setPosts(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       });
 
     firebase.firestore().collection('posts').orderBy('date').onSnapshot((querySnapshot) => {
-      setPosts(querySnapshot.docs.map((doc) => doc.data()));
+      setPosts(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     });
   }, []);
 
@@ -37,10 +37,11 @@ function App() {
     <>
       {posts.map((post) => (
         <Post
-          title={post.title}
-          body={post.body}
-          author={post.author}
-          date={post.date}
+          title={`title: ${post.title}`}
+          body={`body: ${post.body}`}
+          author={`author: ${post.author}`}
+          date={`date: ${post.date}`}
+          docID={post.id}
         />
       ))}
       <PostInput />
