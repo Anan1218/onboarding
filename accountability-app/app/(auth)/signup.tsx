@@ -1,9 +1,19 @@
 import type { JSX } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SignupForm } from '@/features/auth/components/SignupForm';
+import { GoogleSignInButton, useGoogleAuth } from '@/features/auth';
 
 export default function SignupScreen(): JSX.Element {
+  const { signIn: googleSignIn, isLoading: isGoogleLoading } = useGoogleAuth();
+
+  async function handleGoogleSignIn(): Promise<void> {
+    const result = await googleSignIn();
+    if (!result.success) {
+      Alert.alert('Sign Up Failed', result.error.message);
+    }
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
@@ -17,6 +27,21 @@ export default function SignupScreen(): JSX.Element {
               <Text className="text-gray-600 text-center mt-2">
                 Start your accountability journey
               </Text>
+            </View>
+
+            {/* Google Sign-In */}
+            <View className="mb-6">
+              <GoogleSignInButton
+                onPress={(): void => void handleGoogleSignIn()}
+                isLoading={isGoogleLoading}
+              />
+            </View>
+
+            {/* Divider */}
+            <View className="flex-row items-center mb-6">
+              <View className="flex-1 h-px bg-gray-200" />
+              <Text className="px-4 text-gray-500 text-sm">or</Text>
+              <View className="flex-1 h-px bg-gray-200" />
             </View>
 
             <SignupForm />
