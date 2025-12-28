@@ -5,6 +5,7 @@ import { Link } from 'expo-router';
 import { useAuth } from '@/features/auth';
 import { useActiveGoals } from '@/features/goals/hooks/useGoals';
 import { GoalList } from '@/features/goals/components/GoalList';
+import { TrialBanner } from '@/features/subscription';
 
 export default function DashboardScreen(): JSX.Element {
   const { user } = useAuth();
@@ -23,6 +24,9 @@ export default function DashboardScreen(): JSX.Element {
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['bottom']}>
       <View className="flex-1">
+        {/* Trial/Subscription Banner */}
+        <TrialBanner />
+
         {/* Header */}
         <View className="px-4 pt-4 pb-2">
           <Text className="text-2xl font-bold text-gray-900">Active Goals</Text>

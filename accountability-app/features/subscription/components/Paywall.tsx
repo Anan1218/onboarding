@@ -1,7 +1,9 @@
 import type { JSX } from 'react';
+import { useState } from 'react';
 import { View, Text, ActivityIndicator, Alert } from 'react-native';
 import { Button } from '@/shared/components/Button';
 import { useSubscriptionContext } from '../context/SubscriptionContext';
+import { useTrial } from '../hooks/useTrial';
 import { SUBSCRIPTION_PRODUCT_IDS, PREMIUM_FEATURES } from '../types/subscription.types';
 
 interface PaywallProps {
@@ -10,6 +12,8 @@ interface PaywallProps {
 
 export function Paywall({ onClose }: PaywallProps): JSX.Element {
   const { products, isLoading, isPurchasing, purchase, restore } = useSubscriptionContext();
+  const { trialStatus, isLoading: isTrialLoading, startTrial } = useTrial();
+  const [isStartingTrial, setIsStartingTrial] = useState(false);
 
   const monthlyProduct = products.find((p) => p.productId === SUBSCRIPTION_PRODUCT_IDS.MONTHLY);
   const yearlyProduct = products.find((p) => p.productId === SUBSCRIPTION_PRODUCT_IDS.YEARLY);
@@ -35,7 +39,23 @@ export function Paywall({ onClose }: PaywallProps): JSX.Element {
     }
   }
 
-  if (isLoading) {
+  async function handleStartTrial(): Promise<void> {
+    setIsStartingTrial(true);
+    const result = await startTrial();
+    setIsStartingTrial(false);
+
+    if (result.success) {
+      Alert.alert(
+        'Trial Started!',
+        'You now have 7 days of free premium access. Enjoy!',
+        [{ text: 'OK', onPress: (): void => onClose?.() }]
+      );
+    } else {
+      Alert.alert('Error', result.error.message);
+    }
+  }
+
+  if (isLoading || isTrialLoading) {
     return (
       <View className="flex-1 items-center justify-center p-6">
         <ActivityIndicator size="large" color="#0284c7" />
@@ -62,6 +82,35 @@ export function Paywall({ onClose }: PaywallProps): JSX.Element {
           </View>
         ))}
       </View>
+
+      {/* Trial option */}
+      {trialStatus?.isEligible === true && (
+        <View className="bg-green-50 border-2 border-green-500 rounded-xl p-4 mb-6">
+          <View className="items-center mb-3">
+            <Text className="text-xl font-bold text-green-800">Start Free Trial</Text>
+            <Text className="text-green-700 text-center mt-1">
+              Get 7 days of premium access completely free
+            </Text>
+          </View>
+          <Button
+            title={isStartingTrial ? 'Starting...' : 'Start 7-Day Free Trial'}
+            onPress={(): void => void handleStartTrial()}
+            disabled={isStartingTrial}
+          />
+        </View>
+      )}
+
+      {/* Trial status */}
+      {trialStatus?.isActive === true && trialStatus.daysRemaining !== null && (
+        <View className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+          <Text className="text-amber-900 font-semibold text-center">
+            Trial Active: {trialStatus.daysRemaining} {trialStatus.daysRemaining === 1 ? 'day' : 'days'} remaining
+          </Text>
+          <Text className="text-amber-700 text-center text-sm mt-1">
+            Subscribe now to continue after your trial ends
+          </Text>
+        </View>
+      )}
 
       {/* Subscription options */}
       <View className="gap-4 mb-6">
