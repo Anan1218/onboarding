@@ -4,6 +4,7 @@
 export type GoalStatus = 'pending' | 'active' | 'completed' | 'failed' | 'cancelled';
 export type ParticipantRole = 'owner' | 'partner';
 export type VerificationStatus = 'pending' | 'verified' | 'rejected';
+export type SubscriptionTier = 'free' | 'premium';
 
 export interface VerificationResult {
   isValid: boolean;
@@ -159,6 +160,57 @@ export interface Database {
         };
         Relationships: [];
       };
+      user_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          tier: SubscriptionTier;
+          product_id: string | null;
+          original_transaction_id: string | null;
+          latest_receipt: string | null;
+          started_at: string | null;
+          expires_at: string | null;
+          cancelled_at: string | null;
+          trial_started_at: string | null;
+          trial_ends_at: string | null;
+          has_used_trial: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          tier?: SubscriptionTier;
+          product_id?: string | null;
+          original_transaction_id?: string | null;
+          latest_receipt?: string | null;
+          started_at?: string | null;
+          expires_at?: string | null;
+          cancelled_at?: string | null;
+          trial_started_at?: string | null;
+          trial_ends_at?: string | null;
+          has_used_trial?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          tier?: SubscriptionTier;
+          product_id?: string | null;
+          original_transaction_id?: string | null;
+          latest_receipt?: string | null;
+          started_at?: string | null;
+          expires_at?: string | null;
+          cancelled_at?: string | null;
+          trial_started_at?: string | null;
+          trial_ends_at?: string | null;
+          has_used_trial?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -166,6 +218,7 @@ export interface Database {
       goal_status: GoalStatus;
       participant_role: ParticipantRole;
       verification_status: VerificationStatus;
+      subscription_tier: SubscriptionTier;
     };
     CompositeTypes: Record<string, never>;
   };
@@ -194,3 +247,7 @@ export type DbGoalParticipantUpdate = UpdateTables<'goal_participants'>;
 export type DbProofSubmission = Tables<'proof_submissions'>;
 export type DbProofSubmissionInsert = InsertTables<'proof_submissions'>;
 export type DbProofSubmissionUpdate = UpdateTables<'proof_submissions'>;
+
+export type DbUserSubscription = Tables<'user_subscriptions'>;
+export type DbUserSubscriptionInsert = InsertTables<'user_subscriptions'>;
+export type DbUserSubscriptionUpdate = UpdateTables<'user_subscriptions'>;
