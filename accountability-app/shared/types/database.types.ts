@@ -3,6 +3,14 @@
 
 export type GoalStatus = 'pending' | 'active' | 'completed' | 'failed' | 'cancelled';
 export type ParticipantRole = 'owner' | 'partner';
+export type VerificationStatus = 'pending' | 'verified' | 'rejected';
+
+export interface VerificationResult {
+  isValid: boolean;
+  confidence: number;
+  reasoning: string;
+  checkedAt: string;
+}
 
 export interface Database {
   public: {
@@ -112,12 +120,52 @@ export interface Database {
         };
         Relationships: [];
       };
+      proof_submissions: {
+        Row: {
+          id: string;
+          goal_id: string;
+          user_id: string;
+          image_path: string;
+          image_url: string | null;
+          verification_status: VerificationStatus;
+          verification_result: VerificationResult | null;
+          verified_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          goal_id: string;
+          user_id: string;
+          image_path: string;
+          image_url?: string | null;
+          verification_status?: VerificationStatus;
+          verification_result?: VerificationResult | null;
+          verified_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          goal_id?: string;
+          user_id?: string;
+          image_path?: string;
+          image_url?: string | null;
+          verification_status?: VerificationStatus;
+          verification_result?: VerificationResult | null;
+          verified_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
       goal_status: GoalStatus;
       participant_role: ParticipantRole;
+      verification_status: VerificationStatus;
     };
     CompositeTypes: Record<string, never>;
   };
@@ -142,3 +190,7 @@ export type DbGoalUpdate = UpdateTables<'goals'>;
 export type DbGoalParticipant = Tables<'goal_participants'>;
 export type DbGoalParticipantInsert = InsertTables<'goal_participants'>;
 export type DbGoalParticipantUpdate = UpdateTables<'goal_participants'>;
+
+export type DbProofSubmission = Tables<'proof_submissions'>;
+export type DbProofSubmissionInsert = InsertTables<'proof_submissions'>;
+export type DbProofSubmissionUpdate = UpdateTables<'proof_submissions'>;

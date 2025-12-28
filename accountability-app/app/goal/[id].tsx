@@ -1,4 +1,5 @@
 import type { JSX } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
@@ -7,6 +8,8 @@ import { useAuth } from '@/features/auth';
 import { useGoal } from '@/features/goals/hooks/useGoal';
 import { InviteLink } from '@/features/invite/components/InviteLink';
 import { ParticipantsList } from '@/features/invite/components/ParticipantsList';
+import { ProofUploader } from '@/features/proof/components/ProofUploader';
+import { ProofDisplay } from '@/features/proof/components/ProofDisplay';
 import { formatDate, formatCurrency } from '@/shared/utils/formatters';
 import type { GoalStatus } from '@/shared/types/database.types';
 
@@ -15,6 +18,12 @@ export default function GoalDetailScreen(): JSX.Element {
   const router = useRouter();
   const { user } = useAuth();
   const { goal, isLoading, error, updateStatus } = useGoal(id);
+  const [proofKey, setProofKey] = useState(0);
+
+  const handleProofUploaded = useCallback((): void => {
+    // Increment key to force ProofDisplay to refresh
+    setProofKey((prev) => prev + 1);
+  }, []);
 
   async function handleCancel(): Promise<void> {
     Alert.alert('Cancel Goal', 'Are you sure you want to cancel this goal?', [
@@ -99,15 +108,23 @@ export default function GoalDetailScreen(): JSX.Element {
           </View>
         )}
 
-        {/* Proof Upload Section - Placeholder for Phase 7 */}
-        {isActive && (
+        {/* Proof Upload Section */}
+        {isOwner && isActive && (
           <View className="mb-6">
             <Text className="text-lg font-semibold text-gray-900 mb-3">Submit Proof</Text>
-            <View className="bg-gray-100 rounded-xl p-6 items-center">
-              <Text className="text-gray-500 text-center">Photo upload coming in Phase 7</Text>
-            </View>
+            <ProofUploader
+              goalId={goal.id}
+              userId={user?.id ?? ''}
+              onUploadSuccess={handleProofUploaded}
+            />
           </View>
         )}
+
+        {/* Proof History */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold text-gray-900 mb-3">Proof Submissions</Text>
+          <ProofDisplay key={proofKey} goalId={goal.id} />
+        </View>
 
         {/* Actions (only for owner) */}
         {isOwner && isActive && (
