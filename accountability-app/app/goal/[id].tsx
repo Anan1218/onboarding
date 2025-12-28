@@ -3,13 +3,17 @@ import { View, Text, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Button } from '@/shared/components/Button';
+import { useAuth } from '@/features/auth';
 import { useGoal } from '@/features/goals/hooks/useGoal';
+import { InviteLink } from '@/features/invite/components/InviteLink';
+import { ParticipantsList } from '@/features/invite/components/ParticipantsList';
 import { formatDate, formatCurrency } from '@/shared/utils/formatters';
 import type { GoalStatus } from '@/shared/types/database.types';
 
 export default function GoalDetailScreen(): JSX.Element {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { user } = useAuth();
   const { goal, isLoading, error, updateStatus } = useGoal(id);
 
   async function handleCancel(): Promise<void> {
@@ -50,6 +54,7 @@ export default function GoalDetailScreen(): JSX.Element {
     );
   }
 
+  const isOwner = goal.userId === user?.id;
   const isActive = goal.status === 'active' || goal.status === 'pending';
 
   return (
@@ -80,6 +85,20 @@ export default function GoalDetailScreen(): JSX.Element {
           <DetailRow label="Created" value={formatDate(goal.createdAt)} />
         </View>
 
+        {/* Participants */}
+        <View className="mb-6">
+          <Text className="text-lg font-semibold text-gray-900 mb-3">Accountability Partners</Text>
+          <ParticipantsList goalId={goal.id} />
+        </View>
+
+        {/* Invite Link (only for owner) */}
+        {isOwner && isActive && (
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-gray-900 mb-3">Invite Partner</Text>
+            <InviteLink goalId={goal.id} />
+          </View>
+        )}
+
         {/* Proof Upload Section - Placeholder for Phase 7 */}
         {isActive && (
           <View className="mb-6">
@@ -90,8 +109,8 @@ export default function GoalDetailScreen(): JSX.Element {
           </View>
         )}
 
-        {/* Actions */}
-        {isActive && (
+        {/* Actions (only for owner) */}
+        {isOwner && isActive && (
           <View className="mt-4">
             <Button
               title="Cancel Goal"

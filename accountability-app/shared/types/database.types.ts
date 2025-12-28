@@ -2,6 +2,7 @@
 // For now, define manually and update as we add tables
 
 export type GoalStatus = 'pending' | 'active' | 'completed' | 'failed' | 'cancelled';
+export type ParticipantRole = 'owner' | 'partner';
 
 export interface Database {
   public: {
@@ -75,11 +76,48 @@ export interface Database {
         };
         Relationships: [];
       };
+      goal_participants: {
+        Row: {
+          id: string;
+          goal_id: string;
+          user_id: string;
+          role: ParticipantRole;
+          invite_code: string | null;
+          invited_at: string | null;
+          joined_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          goal_id: string;
+          user_id: string;
+          role?: ParticipantRole;
+          invite_code?: string | null;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          goal_id?: string;
+          user_id?: string;
+          role?: ParticipantRole;
+          invite_code?: string | null;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: {
       goal_status: GoalStatus;
+      participant_role: ParticipantRole;
     };
     CompositeTypes: Record<string, never>;
   };
@@ -100,3 +138,7 @@ export type ProfileUpdate = UpdateTables<'profiles'>;
 export type DbGoal = Tables<'goals'>;
 export type DbGoalInsert = InsertTables<'goals'>;
 export type DbGoalUpdate = UpdateTables<'goals'>;
+
+export type DbGoalParticipant = Tables<'goal_participants'>;
+export type DbGoalParticipantInsert = InsertTables<'goal_participants'>;
+export type DbGoalParticipantUpdate = UpdateTables<'goal_participants'>;
