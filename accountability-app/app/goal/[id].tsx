@@ -10,6 +10,7 @@ import { InviteLink } from '@/features/invite/components/InviteLink';
 import { ParticipantsList } from '@/features/invite/components/ParticipantsList';
 import { ProofUploader } from '@/features/proof/components/ProofUploader';
 import { ProofDisplay } from '@/features/proof/components/ProofDisplay';
+import { useProofSubscription } from '@/features/proof/hooks/useProofSubscription';
 import { formatDate, formatCurrency } from '@/shared/utils/formatters';
 import type { GoalStatus } from '@/shared/types/database.types';
 
@@ -24,6 +25,12 @@ export default function GoalDetailScreen(): JSX.Element {
     // Increment key to force ProofDisplay to refresh
     setProofKey((prev) => prev + 1);
   }, []);
+
+  // Subscribe to real-time verification updates
+  useProofSubscription({
+    goalId: id,
+    onVerificationComplete: handleProofUploaded,
+  });
 
   async function handleCancel(): Promise<void> {
     Alert.alert('Cancel Goal', 'Are you sure you want to cancel this goal?', [
@@ -115,6 +122,7 @@ export default function GoalDetailScreen(): JSX.Element {
             <ProofUploader
               goalId={goal.id}
               userId={user?.id ?? ''}
+              goalDescription={goal.description}
               onUploadSuccess={handleProofUploaded}
             />
           </View>

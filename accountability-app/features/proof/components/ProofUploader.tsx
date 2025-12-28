@@ -5,18 +5,20 @@ import { useProofUpload } from '../hooks/useProofUpload';
 interface ProofUploaderProps {
   goalId: string;
   userId: string;
+  goalDescription: string;
   onUploadSuccess: () => void;
 }
 
 export function ProofUploader({
   goalId,
   userId,
+  goalDescription,
   onUploadSuccess,
 }: ProofUploaderProps): JSX.Element {
   const { isUploading, pickAndUpload, takePhotoAndUpload } = useProofUpload();
 
   async function handleTakePhoto(): Promise<void> {
-    const result = await takePhotoAndUpload(goalId, userId);
+    const result = await takePhotoAndUpload(goalId, userId, goalDescription);
 
     if (!result.success) {
       if (result.error.message !== 'No photo taken') {
@@ -25,12 +27,12 @@ export function ProofUploader({
       return;
     }
 
-    Alert.alert('Success', 'Proof uploaded! AI verification will begin shortly.');
+    Alert.alert('Success', 'Proof uploaded! AI is verifying your submission...');
     onUploadSuccess();
   }
 
   async function handlePickPhoto(): Promise<void> {
-    const result = await pickAndUpload(goalId, userId);
+    const result = await pickAndUpload(goalId, userId, goalDescription);
 
     if (!result.success) {
       if (result.error.message !== 'No image selected') {
@@ -39,7 +41,7 @@ export function ProofUploader({
       return;
     }
 
-    Alert.alert('Success', 'Proof uploaded! AI verification will begin shortly.');
+    Alert.alert('Success', 'Proof uploaded! AI is verifying your submission...');
     onUploadSuccess();
   }
 

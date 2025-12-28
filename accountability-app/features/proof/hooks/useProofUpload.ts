@@ -7,8 +7,16 @@ import type { Result } from '@/shared/types/common.types';
 interface UseProofUploadReturn {
   isUploading: boolean;
   error: Error | null;
-  pickAndUpload: (goalId: string, userId: string) => Promise<Result<ProofSubmission>>;
-  takePhotoAndUpload: (goalId: string, userId: string) => Promise<Result<ProofSubmission>>;
+  pickAndUpload: (
+    goalId: string,
+    userId: string,
+    goalDescription: string
+  ) => Promise<Result<ProofSubmission>>;
+  takePhotoAndUpload: (
+    goalId: string,
+    userId: string,
+    goalDescription: string
+  ) => Promise<Result<ProofSubmission>>;
 }
 
 export function useProofUpload(): UseProofUploadReturn {
@@ -23,11 +31,16 @@ export function useProofUpload(): UseProofUploadReturn {
   }, []);
 
   const uploadImage = useCallback(
-    async (imageUri: string, goalId: string, userId: string): Promise<Result<ProofSubmission>> => {
+    async (
+      imageUri: string,
+      goalId: string,
+      userId: string,
+      goalDescription: string
+    ): Promise<Result<ProofSubmission>> => {
       setIsUploading(true);
       setError(null);
 
-      const result = await proofService.uploadProof(goalId, userId, imageUri);
+      const result = await proofService.uploadProof(goalId, userId, imageUri, goalDescription);
 
       if (!result.success) {
         setError(result.error);
@@ -40,7 +53,11 @@ export function useProofUpload(): UseProofUploadReturn {
   );
 
   const pickAndUpload = useCallback(
-    async (goalId: string, userId: string): Promise<Result<ProofSubmission>> => {
+    async (
+      goalId: string,
+      userId: string,
+      goalDescription: string
+    ): Promise<Result<ProofSubmission>> => {
       const hasPermission = await requestPermissions();
       if (!hasPermission) {
         const err = new Error('Permission to access photos was denied');
@@ -61,13 +78,17 @@ export function useProofUpload(): UseProofUploadReturn {
         return { success: false, error: err };
       }
 
-      return uploadImage(selectedAsset.uri, goalId, userId);
+      return uploadImage(selectedAsset.uri, goalId, userId, goalDescription);
     },
     [requestPermissions, uploadImage]
   );
 
   const takePhotoAndUpload = useCallback(
-    async (goalId: string, userId: string): Promise<Result<ProofSubmission>> => {
+    async (
+      goalId: string,
+      userId: string,
+      goalDescription: string
+    ): Promise<Result<ProofSubmission>> => {
       const hasPermission = await requestPermissions();
       if (!hasPermission) {
         const err = new Error('Permission to access camera was denied');
@@ -87,7 +108,7 @@ export function useProofUpload(): UseProofUploadReturn {
         return { success: false, error: err };
       }
 
-      return uploadImage(capturedAsset.uri, goalId, userId);
+      return uploadImage(capturedAsset.uri, goalId, userId, goalDescription);
     },
     [requestPermissions, uploadImage]
   );

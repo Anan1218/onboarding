@@ -5,6 +5,7 @@ import type { ProofSubmission } from '../types/proof.types';
 import { mapDbProofToProof, isValidDbProof, isValidDbProofArray } from '../types/proof.types';
 import type { DbProofSubmission } from '@/shared/types/database.types';
 import type { Result } from '@/shared/types/common.types';
+import { verificationService } from './verificationService';
 
 // Type guard for signed URL response
 interface SignedUrlData {
@@ -36,7 +37,8 @@ export const proofService = {
   async uploadProof(
     goalId: string,
     userId: string,
-    imageUri: string
+    imageUri: string,
+    goalDescription: string
   ): Promise<Result<ProofSubmission>> {
     try {
       // Read file as base64
@@ -84,10 +86,28 @@ export const proofService = {
       // Get signed URL for the image
       const proofWithUrl = await getProofWithSignedUrl(data);
 
+      // Trigger AI verification in the background
+      if (proofWithUrl.imageUrl !== null) {
+        void this.triggerVerification(proofWithUrl.id, goalDescription, proofWithUrl.imageUrl);
+      }
+
       return { success: true, data: proofWithUrl };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to upload proof';
       return { success: false, error: new Error(message) };
+    }
+  },
+
+  async triggerVerification(
+    proofId: string,
+    goalDescription: string,
+    imageUrl: string
+  ): Promise<void> {
+    // This runs in background - errors are logged but not thrown
+    const result = await verificationService.verifyProof(proofId, goalDescription, imageUrl);
+
+    if (!result.success) {
+      console.error('Verification failed:', result.error.message);
     }
   },
 

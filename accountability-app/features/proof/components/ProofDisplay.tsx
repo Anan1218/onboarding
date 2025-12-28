@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { proofService } from '../services/proofService';
 import type { ProofSubmission, VerificationStatus } from '../types/proof.types';
 import { formatDateTime } from '@/shared/utils/formatters';
+import { VerificationResult } from './VerificationResult';
 
 interface ProofDisplayProps {
   goalId: string;
@@ -70,17 +71,22 @@ function ProofCard({ proof }: ProofCardProps): JSX.Element {
 
       {/* Info */}
       <View className="p-3">
-        <View className="flex-row justify-between items-center">
+        <View className="flex-row justify-between items-center mb-3">
           <Text className="text-sm text-gray-500">{formatDateTime(proof.createdAt)}</Text>
           <View className={`px-2 py-1 rounded-full ${statusConfig.bg}`}>
             <Text className={`text-xs font-medium ${statusConfig.text}`}>{statusConfig.label}</Text>
           </View>
         </View>
 
-        {/* Verification result - will be shown in Phase 8 */}
+        {/* Verification result */}
         {proof.verificationResult !== null && (
-          <View className="mt-2 p-2 bg-white rounded-lg">
-            <Text className="text-sm text-gray-700">{proof.verificationResult.reasoning}</Text>
+          <VerificationResult result={proof.verificationResult} />
+        )}
+
+        {/* Pending state */}
+        {proof.verificationStatus === 'pending' && (
+          <View className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <Text className="text-yellow-800 text-center">AI is analyzing your proof...</Text>
           </View>
         )}
       </View>
