@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Forfeit Clone",
+    "slug": "accountability-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "accountability",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0284c7"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.forfeitclone.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to take proof photos for your goals.",
+        "NSPhotoLibraryUsageDescription": "This app accesses your photos to upload proof for your goals."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0284c7"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

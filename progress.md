@@ -74,26 +74,26 @@ Each phase is independently testable. We verify it works before moving on.
 
 ---
 
-## Phase 5: Create a Goal (Solo)
-**Goal:** User can create a goal and see it on dashboard
-**Test:** Fill form → submit → see goal appear in list
+## Phase 5: Create a Goal (with Recurring Habits)
+**Goal:** User can create one-time goals OR recurring habits
+**Test:** Create "Gym 3x/week" → see progress tracker → complete 3 times
 **Spec:** [phase-05-create-goal.md](./phases/phase-05-create-goal.md)
 
-- [ ] Create `goals` table in Supabase with RLS
-- [ ] Build GoalForm component with validation
-- [ ] Build GoalCard component
+- [ ] Create `goals` table with recurrence support
+- [ ] Create `goal_completions` table for tracking recurring progress
+- [ ] Build GoalForm with frequency options (once, daily, X per week/month)
+- [ ] Build GoalCard showing progress (2/3 completed this week)
 - [ ] Build GoalList with pull-to-refresh
-- [ ] Wire up Create screen with form
 - [ ] Wire up Dashboard to list active goals
-- [ ] Create goal detail page
+- [ ] Create goal detail page with completion history
 
-**Checkpoint:** Create goal → see it on dashboard → tap to view details
+**Checkpoint:** Create recurring goal → complete it multiple times → see progress
 
 ---
 
-## Phase 6: Accountability Partner (Invite Link)
-**Goal:** Share a link, friend opens it, joins as accountability partner
-**Test:** Create goal → copy link → friend opens → friend can view progress
+## Phase 6: Accountability Partner (with Friend-Verify)
+**Goal:** Share a link, friend joins and can verify your completions
+**Test:** Create goal → invite friend → friend approves your completion
 **Spec:** [phase-06-accountability-partner.md](./phases/phase-06-accountability-partner.md)
 
 - [ ] Create `goal_participants` table with RLS
@@ -102,26 +102,28 @@ Each phase is independently testable. We verify it works before moving on.
 - [ ] Build join flow (`app/join/[code].tsx`)
 - [ ] Handle: not logged in → signup → then join
 - [ ] Show participants on goal detail
-- [ ] Partners can view but not upload proofs
+- [ ] **Friend-verify:** Partners can approve/reject completions
+- [ ] Push notification to partner when verification needed
 
-**Checkpoint:** Two users connected on same goal via invite link
+**Checkpoint:** Friend receives notification → approves completion → goal marked done
 
 ---
 
-## Phase 7: Photo Upload (No AI)
-**Goal:** User can upload a photo as proof
-**Test:** Take photo → upload → see it displayed in goal detail
+## Phase 7: Verification Types (Photo, Self, Friend)
+**Goal:** Multiple ways to verify goal completion
+**Test:** Create goal with each verify type → complete using that method
 **Spec:** [phase-07-photo-upload.md](./phases/phase-07-photo-upload.md)
 
-- [ ] Create `proof_submissions` table
+- [ ] Create `completions` table (replaces proof_submissions)
+- [ ] Add `verification_type` field (photo_ai, self, friend)
 - [ ] Create `proofs` storage bucket (private)
-- [ ] Build ProofUploader component (camera + gallery)
-- [ ] Upload photo to Supabase Storage
-- [ ] Create proof_submission record
-- [ ] Build ProofDisplay component
-- [ ] Display uploaded proofs in goal detail
+- [ ] **Photo verify:** Camera + gallery → AI verification
+- [ ] **Self verify:** One-tap "I did it" button
+- [ ] **Friend verify:** Request sent to partner → they approve
+- [ ] Build CompletionCard component for each type
+- [ ] Display completion history in goal detail
 
-**Checkpoint:** Photo uploads and displays correctly
+**Checkpoint:** All three verification methods work
 
 ---
 
@@ -175,21 +177,22 @@ Each phase is independently testable. We verify it works before moving on.
 
 ---
 
-## Phase 11: History & Polish
-**Goal:** See past goals and outcomes
-**Test:** Complete a goal → see it in history with stats
+## Phase 11: History, Notifications & Polish
+**Goal:** See past goals, get notified on failures, final polish
+**Test:** Fail a goal → friends get notified → see in history
 **Spec:** [phase-11-history-polish.md](./phases/phase-11-history-polish.md)
 
 - [ ] Create history service with stats
-- [ ] Build HistoryStats component (completion rate)
+- [ ] Build HistoryStats component (completion rate, streaks)
 - [ ] Build HistoryCard component
 - [ ] Build HistoryList with pull-to-refresh
-- [ ] Wire up History screen
+- [ ] **Push notifications setup** (expo-notifications)
+- [ ] **Notify friends on failure** (shame notification)
+- [ ] Notify user of upcoming deadlines
 - [ ] Add tab bar icons
-- [ ] Add loading skeletons
-- [ ] Add empty states
+- [ ] Add loading skeletons and empty states
 
-**Checkpoint:** Full app flow works end-to-end
+**Checkpoint:** Full app flow works, notifications fire correctly
 
 ---
 
